@@ -524,7 +524,7 @@
     <button class="btn primary" type="button" id="openBig" style="width:100%">Open big display</button>
     <div class="hint">A stripped-down, extra-large readout — VMG, distance and steer — for reading from across the cockpit. Tap it anywhere to exit.</div>
 
-    <div class="hint" style="margin-top:22px; opacity:.5; text-align:center">Build 12 — VMG +25%</div>
+    <div class="hint" style="margin-top:22px; opacity:.5; text-align:center">Build 13 — line distance fix</div>
   </section>
 </main>
 
@@ -661,13 +661,14 @@ function lineDef(line){
   }
   const a = waypoints.find(x => x.id === line.aId), b = waypoints.find(x => x.id === line.bId);
   if(!a || !b || a.id === b.id) return null;
-  return { aLat:a.lat, aLon:a.lon, brg: bearing(a.lat, a.lon, b.lat, b.lon) };
+  return { aLat:a.lat, aLon:a.lon, brg: bearing(a, b) };
 }
 
 // signed cross-track distance (m) and the bearing from P toward the nearest point on the line
 function lineGeometry(aLat, aLon, lineBrg, pLat, pLon){
-  const d13 = haversine(aLat, aLon, pLat, pLon) / R;          // angular distance A->P
-  const th13 = toRad(bearing(aLat, aLon, pLat, pLon));
+  const A = {lat:aLat, lon:aLon}, P = {lat:pLat, lon:pLon};
+  const d13 = haversine(A, P) / R;                            // angular distance A->P
+  const th13 = toRad(bearing(A, P));
   const th12 = toRad(lineBrg);
   const xtd = Math.asin(Math.max(-1, Math.min(1, Math.sin(d13) * Math.sin(th13 - th12)))) * R;
   const perpBrg = xtd >= 0 ? ((lineBrg - 90 + 360) % 360) : ((lineBrg + 90) % 360);
