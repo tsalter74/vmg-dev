@@ -85,12 +85,12 @@
   .dial svg{ width:100%; height:100%; display:block; overflow:visible; }
   .core{
     position:absolute; inset:0; display:flex; flex-direction:column;
-    align-items:center; justify-content:center; pointer-events:none;
-    transform:translateY(26%);
+    align-items:center; justify-content:flex-end; pointer-events:none;
+    transform:translateY(-1%);
   }
   .vmg-num{
     font-family:var(--mono); font-weight:600;
-    font-size:clamp(70px, 27vw, 135px); line-height:.92;
+    font-size:clamp(91px, 35vw, 176px); line-height:.92;
     font-variant-numeric:tabular-nums; letter-spacing:-.02em;
     color:var(--good); max-width:100%; overflow:hidden;
     text-shadow:0 0 20px color-mix(in srgb, currentColor 45%, transparent);
@@ -527,7 +527,7 @@
     <button class="btn primary" type="button" id="openBig" style="width:100%">Open big display</button>
     <div class="hint">A stripped-down, extra-large readout — VMG, distance and steer — for reading from across the cockpit. Tap it anywhere to exit.</div>
 
-    <div class="hint" style="margin-top:22px; opacity:.5; text-align:center">Build 15 — dial labels & spacing</div>
+    <div class="hint" style="margin-top:22px; opacity:.5; text-align:center">Build 16 — VMG +30%</div>
   </section>
 </main>
 
