@@ -82,7 +82,7 @@
   /* ---------- Navigate view ---------- */
   .dial-wrap{ display:flex; justify-content:center; margin:6px 0 2px; }
   .dial{ width:min(78vw, 320px); aspect-ratio:1; position:relative; }
-  .dial svg{ width:100%; height:100%; display:block; }
+  .dial svg{ width:100%; height:100%; display:block; overflow:visible; }
   .core{
     position:absolute; inset:0; display:flex; flex-direction:column;
     align-items:center; justify-content:center; pointer-events:none;
@@ -98,9 +98,9 @@
   }
   .vmg-num.opening{ color:var(--bad); }
   .vmg-num.idle{ color:var(--muted); text-shadow:none; }
-  .vmg-meta{ display:flex; justify-content:space-between; align-items:baseline; width:70%; margin-top:6px; }
-  .vmg-label{ font-size:13px; letter-spacing:.18em; color:var(--muted); text-transform:uppercase; }
-  .vmg-unit{ font-family:var(--mono); font-size:16px; color:var(--muted); }
+  .vmg-meta{ display:flex; justify-content:space-between; align-items:baseline; width:78%; margin-top:6px; }
+  .vmg-label{ font-size:26px; letter-spacing:.18em; color:var(--muted); text-transform:uppercase; }
+  .vmg-unit{ font-family:var(--mono); font-size:32px; color:var(--muted); }
 
   .state-tag{
     text-align:center; font-size:13px; letter-spacing:.16em; text-transform:uppercase;
@@ -300,13 +300,13 @@
             <!-- rotating compass card (course-up): ticks + cardinal letters -->
             <g id="cardRot" transform="rotate(0 100 100)">
               <g id="ticks"></g>
-              <text x="100" y="26" text-anchor="middle" font-family="ui-monospace,monospace" font-size="13" fill="#9FC0CE" id="lblN">N</text>
-              <text x="176" y="105" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#5C7C8A">E</text>
-              <text x="100" y="184" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#5C7C8A">S</text>
-              <text x="24" y="105" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#5C7C8A">W</text>
+              <text x="100" y="17" text-anchor="middle" font-family="ui-monospace,monospace" font-size="13" fill="#9FC0CE" id="lblN">N</text>
+              <text x="188" y="104" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#5C7C8A">E</text>
+              <text x="100" y="192" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#5C7C8A">S</text>
+              <text x="12" y="104" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#5C7C8A">W</text>
             </g>
-            <!-- fixed heading index (top) -->
-            <polygon points="100,4 95,15 105,15" fill="#5AA9D6"/>
+            <!-- fixed heading index (top, above the outer ring) -->
+            <polygon points="100,-9 93,3 107,3" fill="#5AA9D6"/>
             <!-- waypoint needle (rotates to relative bearing) -->
             <g id="needleRot" transform="rotate(0 100 100)">
               <polygon points="100,20 92,104 108,104" fill="#F2B33D"/>
