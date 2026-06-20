@@ -67,7 +67,7 @@
   .active-wp{
     flex:1; min-width:0;
     font-size:15px; color:var(--mark);
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:center;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:right;
   }
   .units-btn{
     font-family:var(--mono); font-size:15px; color:var(--text);
@@ -86,6 +86,7 @@
   .core{
     position:absolute; inset:0; display:flex; flex-direction:column;
     align-items:center; justify-content:center; pointer-events:none;
+    transform: translateY(18%);   /* drop the readout into the lower half, clear of the hub */
   }
   .vmg-num{
     font-family:var(--mono); font-weight:600;
@@ -283,7 +284,6 @@
 <header>
   <span class="brand"><b>Intergalactic VMG</b></span>
   <span class="active-wp" id="activeWpName">No mark selected</span>
-  <button class="units-btn" id="unitsBtn" type="button">kn</button>
 </header>
 
 <main>
@@ -524,7 +524,7 @@
     <button class="btn primary" type="button" id="openBig" style="width:100%">Open big display</button>
     <div class="hint">A stripped-down, extra-large readout — VMG, distance and steer — for reading from across the cockpit. Tap it anywhere to exit.</div>
 
-    <div class="hint" style="margin-top:22px; opacity:.5; text-align:center">Build 13 — line distance fix</div>
+    <div class="hint" style="margin-top:22px; opacity:.5; text-align:center">Build 14 — header & dial tweaks</div>
   </section>
 </main>
 
@@ -690,6 +690,13 @@ function currentTarget(){
   return { name: wp.name, isLine: false, valid: true, wp };
 }
 
+// label for the active target: a contrasting icon (◆ mark / ⟂ line) plus the
+// name, stripping any icon already baked into the name so it never doubles up
+function targetLabel(t){
+  const name = (t && t.name || "").replace(/^\s*[⟂◆⊥]\s*/, "");
+  return (t && t.isLine ? "⟂ " : "◆ ") + name;
+}
+
 /* ---------------- toast ---------------- */
 let toastT;
 function toast(msg){
@@ -762,7 +769,7 @@ function render(){
     return;
   }
 
-  $("activeWpName").textContent = tgt.isLine ? ("⟂ " + tgt.name) : tgt.name;
+  $("activeWpName").textContent = targetLabel(tgt);
   $("activeWpName").style.color = "var(--mark)";
 
   // reference heading for the dial (course-up or compass-up), in chosen north ref
@@ -866,7 +873,7 @@ function fitDialVmg(){
 }
 function updateBig(vmgText, vmgKind, stateText, distText, relText, relBrg){
   const t = currentTarget();
-  $("bigWp").textContent = (t && t.valid) ? (t.isLine ? ("⟂ " + t.name) : t.name) : "—";
+  $("bigWp").textContent = (t && t.valid) ? targetLabel(t) : "—";
   const bv = $("bigVmg");
   bv.textContent = vmgText;
   bv.className = "big-vmg" + (vmgKind==="opening" ? " opening" : vmgKind==="idle" ? " idle" : "");
@@ -1087,7 +1094,7 @@ function renderLines(){
     let distTxt="";
     if(def && pos){ const g=lineGeometry(def.aLat,def.aLon,def.brg,pos.lat,pos.lon); const d=fmtDist(Math.abs(g.xtd)); distTxt=`${d.v} ${d.u}`; }
     li.innerHTML = `<div class="wp-radio"></div><div class="wp-main"><div class="wp-name"></div><div class="wp-coords"></div></div><div class="wp-dist">${distTxt}</div><button class="wp-del" aria-label="Delete">×</button>`;
-    li.querySelector(".wp-name").textContent = ln.name;
+    li.querySelector(".wp-name").textContent = ln.name.replace(/^\s*[⟂◆⊥]\s*/, "");
     li.querySelector(".wp-coords").textContent = lineSummary(ln);
     li.addEventListener("click", e=>{ if(e.target.closest(".wp-del")) return; selectLine(ln.id); });
     li.querySelector(".wp-del").addEventListener("click", e=>{
@@ -1109,7 +1116,7 @@ function addLine(){
   const form=readLineForm();
   if(!form){ toast(lineType==="wind" ? "Pick a waypoint and wind direction" : "Pick two different waypoints"); return; }
   const name=$("lineName").value.trim();
-  const auto = form.type==="wind" ? `⟂ wind ${Math.round(form.wind)}°` : `${wpName(form.aId)} → ${wpName(form.bId)}`;
+  const auto = form.type==="wind" ? `Wind ${Math.round(form.wind)}°` : `${wpName(form.aId)} → ${wpName(form.bId)}`;
   const ln = Object.assign({ id:"l"+Date.now().toString(36)+(idSeq++).toString(36)+Math.random().toString(36).slice(2,4), name:name||auto }, form);
   lines.push(ln); saveLines();
   $("lineName").value=""; if(lineType==="wind") $("lineWind").value="";
@@ -1349,7 +1356,6 @@ function switchView(v){
 function setUnits(u){
   if(!UNIT_SETS[u]) return;
   units=u; saveUnits();
-  $("unitsBtn").textContent = UNIT_SETS[units].spName;
   renderOptions(); render(); renderWpDistances();
 }
 function cycleUnits(){
@@ -1395,9 +1401,7 @@ async function toggleBig(on){
 /* ---------------- wire up ---------------- */
 function init(){
   load();
-  $("unitsBtn").textContent = UNIT_SETS[units].spName;
   document.querySelectorAll("nav button").forEach(b=> b.addEventListener("click", ()=>switchView(b.dataset.view)));
-  $("unitsBtn").addEventListener("click", cycleUnits);
   $("addWpBtn").addEventListener("click", addWaypoint);
   $("wakeBtn").addEventListener("click", toggleWake);
   $("orientBtn").addEventListener("click", toggleCompass);
