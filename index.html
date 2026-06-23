@@ -92,6 +92,7 @@
     font-family:var(--sans); font-weight:700;
     font-size:clamp(102px, 39vw, 197px); line-height:.92;
     font-variant-numeric:tabular-nums; letter-spacing:-.02em;
+    white-space:nowrap;
     color:var(--good);
     text-shadow:0 0 20px color-mix(in srgb, currentColor 45%, transparent);
     transition:color .25s ease;
@@ -251,10 +252,7 @@
 
   /* big landscape display */
   .big{
-    position:fixed; top:50%; left:50%;
-    width:100vh; height:100vw;                 /* swapped: fills the screen once rotated */
-    transform:translate(-50%,-50%) rotate(90deg);
-    transform-origin:center center;
+    position:fixed; inset:0;                   /* normal overlay: follows device orientation */
     z-index:60; background:var(--bg);
     display:none; flex-direction:column; align-items:center; justify-content:center;
     padding:12px 22px; gap:4px;
@@ -268,15 +266,15 @@
     font-family:var(--sans); font-weight:700; font-variant-numeric:tabular-nums;
     font-size:clamp(120px, 44vw, 320px); line-height:.86; letter-spacing:-.02em; color:var(--good);
     text-shadow:0 0 30px color-mix(in srgb, currentColor 40%, transparent);
-    max-width:100%; overflow:hidden;
+    max-width:100%; overflow:hidden; white-space:nowrap;
   }
   .big-vmg.opening{ color:var(--bad); }
   .big-vmg.idle{ color:var(--muted); text-shadow:none; }
   .big-vmg-sub{ font-family:var(--mono); font-size:clamp(13px,4vw,18px); letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-top:2px; text-align:center; }
-  .big-row{ display:flex; gap:14px; margin-top:clamp(14px,5vw,34px); width:100%; max-width:560px; }
+  .big-row{ display:flex; gap:14px; margin-top:clamp(8px,2.5vw,18px); width:100%; max-width:560px; }
   .big-cell{ flex:1; min-width:0; text-align:center; }
   .big-k{ font-size:clamp(12px,3.4vw,15px); letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
-  .big-v{ font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap; font-size:clamp(30px,8.5vw,56px); color:var(--text); line-height:1; margin-top:6px; }
+  .big-v{ font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap; font-size:clamp(26px,7vw,46px); color:var(--text); line-height:1; margin-top:4px; }
 
   @media (prefers-reduced-motion: reduce){
     *{ transition:none !important; }
@@ -860,17 +858,15 @@ function fitBigVmg(){
   const len = txt.length;
   if(!len || !el.scrollWidth) return;
   const charW = el.scrollWidth / len;                // advance per char at base size
+  if(!isFinite(charW) || charW<=0) return;
   const base = parseFloat(getComputedStyle(el).fontSize) || 200;
   const chars = Math.max(len, 3);
-  const shortAxis = Math.min(window.innerWidth, window.innerHeight); // portrait width
-  const longAxis  = Math.max(window.innerWidth, window.innerHeight); // landscape width
-  // main dial number fills 90% of the short axis; big landscape = 40% larger
-  const mainSize = base * (shortAxis * 0.90) / (charW * chars);
-  let size = mainSize * 1.4;
-  // cap so it fits the rotated area: width = long axis, height leaves room for arrow/sub/row
-  const capW = base * (longAxis * 0.94) / (charW * chars);
-  const capH = (shortAxis * 0.66) / 0.86;
-  size = Math.max(60, Math.min(size, capW, capH));
+  // the overlay now follows device orientation, so size against the real
+  // viewport: fill the width for the current value, but cap the height so the
+  // arrow, sub-label and stat row below the number stay fully on screen.
+  const capW = base * (window.innerWidth * 0.94) / (charW * chars);
+  const capH = (window.innerHeight * 0.48) / 0.86;   // 0.86 = line-height
+  let size = Math.max(60, Math.min(capW, capH));
   el.style.fontSize = size + "px";
 }
 function fitDialVmg(){
@@ -880,10 +876,11 @@ function fitDialVmg(){
   const txt = el.textContent || "";
   const len = txt.length;
   if(!len || !el.scrollWidth) return;               // nothing to measure / hidden
-  const charW = el.scrollWidth / len;               // monospace: advance per char at base size
+  const charW = el.scrollWidth / len;               // advance per char at base size
   if(!isFinite(charW) || charW<=0) return;
-  // size so the readout fills the screen width; reserve a min of 3 chars so the
-  // idle "--" doesn't blow up, and the decimal rule caps real values at 4 chars
+  // size so the readout fills the screen width for the CURRENT value: small
+  // numbers (e.g. "9.9") render big and shrink once they reach 4 chars
+  // ("10.0" and up). reserve a min of 3 chars so idle "--" doesn't blow up.
   const chars = Math.max(len, 3);
   const avail = window.innerWidth * 0.90;           // use the whole screen, not just the dial
   const base = parseFloat(getComputedStyle(el).fontSize) || 160;
