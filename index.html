@@ -89,7 +89,7 @@
     transform:translateY(-1%);
   }
   .vmg-num{
-    font-family:var(--mono); font-weight:600;
+    font-family:var(--sans); font-weight:700;
     font-size:clamp(127px, 49vw, 246px); line-height:.92;
     font-variant-numeric:tabular-nums; letter-spacing:-.02em;
     color:var(--good);
@@ -262,8 +262,8 @@
   .big-exit{ background:var(--panel); border:1px solid var(--line); color:var(--text); border-radius:9px; font-size:18px; padding:6px 12px; flex:none; }
   .big-arrow{ width:clamp(64px, 22vw, 130px); height:clamp(64px, 22vw, 130px); margin-bottom:-4px; transition:transform .25s ease; }
   .big-vmg{
-    font-family:var(--mono); font-weight:700; font-variant-numeric:tabular-nums;
-    font-size:clamp(120px, 44vw, 320px); line-height:.86; letter-spacing:-.03em; color:var(--good);
+    font-family:var(--sans); font-weight:700; font-variant-numeric:tabular-nums;
+    font-size:clamp(120px, 44vw, 320px); line-height:.86; letter-spacing:-.02em; color:var(--good);
     text-shadow:0 0 30px color-mix(in srgb, currentColor 40%, transparent);
     max-width:100%; overflow:hidden;
   }
@@ -527,7 +527,7 @@
     <button class="btn primary" type="button" id="openBig" style="width:100%">Open big display</button>
     <div class="hint">A stripped-down, extra-large readout — VMG, distance and steer — for reading from across the cockpit. Tap it anywhere to exit.</div>
 
-    <div class="hint" style="margin-top:22px; opacity:.5; text-align:center">Build 19 — longitude defaults W</div>
+    <div class="hint" style="margin-top:22px; opacity:.5; text-align:center">Build 21 — proportional VMG digits</div>
   </section>
 </main>
 
