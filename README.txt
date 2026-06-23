@@ -95,7 +95,7 @@ NAVIGATE
 --------
 The big number is live VMG — green while closing, coral while losing ground,
 grey when idle. It reads one decimal below 100 (e.g. 6.4) and whole numbers
-above. "Big landscape display" (in Options) is a stripped-back, extra-large read-out, laid out in landscape (turn the phone sideways), for
+above. "Big display" (in Options) is a stripped-back, extra-large read-out for
 glancing across the cockpit; "Keep screen on" holds the screen awake.
 
 
