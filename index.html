@@ -90,9 +90,9 @@
   }
   .vmg-num{
     font-family:var(--mono); font-weight:600;
-    font-size:clamp(91px, 35vw, 176px); line-height:.92;
+    font-size:clamp(127px, 49vw, 246px); line-height:.92;
     font-variant-numeric:tabular-nums; letter-spacing:-.02em;
-    color:var(--good); max-width:100%; overflow:hidden;
+    color:var(--good);
     text-shadow:0 0 20px color-mix(in srgb, currentColor 45%, transparent);
     transition:color .25s ease;
   }
@@ -386,7 +386,7 @@
             <span class="cfmt" data-cf="dd"><input id="wpLon" type="text" inputmode="decimal" placeholder="1.1102" /></span>
             <span class="cfmt" data-cf="ddm" hidden><input id="ddmLonD" type="text" inputmode="numeric" placeholder="1" /><span class="sym">°</span><input id="ddmLonM" type="text" inputmode="decimal" placeholder="6.6" /><span class="sym">′</span></span>
             <span class="cfmt" data-cf="dms" hidden><input id="dmsLonD" type="text" inputmode="numeric" placeholder="1" /><span class="sym">°</span><input id="dmsLonM" type="text" inputmode="numeric" placeholder="6" /><span class="sym">′</span><input id="dmsLonS" type="text" inputmode="decimal" placeholder="37" /><span class="sym">″</span></span>
-            <button type="button" class="hem-btn" id="lonHemBtn">E</button>
+            <button type="button" class="hem-btn neg" id="lonHemBtn">W</button>
           </div>
         </div>
         <div class="hint">Enter the value(s) and tap N/S or E/W — no minus sign needed. In Decimal you can also paste “lat, lon” into the latitude box. Change the format under Options.</div>
@@ -527,7 +527,7 @@
     <button class="btn primary" type="button" id="openBig" style="width:100%">Open big display</button>
     <div class="hint">A stripped-down, extra-large readout — VMG, distance and steer — for reading from across the cockpit. Tap it anywhere to exit.</div>
 
-    <div class="hint" style="margin-top:22px; opacity:.5; text-align:center">Build 16 — VMG +30%</div>
+    <div class="hint" style="margin-top:22px; opacity:.5; text-align:center">Build 19 — longitude defaults W</div>
   </section>
 </main>
 
@@ -818,7 +818,7 @@ function render(){
   let vmgText, vmgKind, stateText;
   if(v==null){ vmgText="--"; vmgKind="idle"; stateText="waiting for course"; }
   else {
-    const dd = Math.abs(v*U.sp); vmgText = dd.toFixed(1);
+    const dd = Math.abs(v*U.sp); vmgText = dd < 100 ? dd.toFixed(1) : Math.round(dd).toString();
     if(sog<=0.2){ vmgKind="idle"; stateText="stationary"; }
     else if(v>=0.05){ vmgKind="closing"; stateText="closing the "+noun; }
     else if(v<=-0.05){ vmgKind="opening"; stateText="losing ground"; }
@@ -864,15 +864,20 @@ function fitBigVmg(){
 function fitDialVmg(){
   const el = $("vmgNum");
   if(!el) return;
-  el.style.fontSize = "";                          // back to the CSS max
-  const parent = el.parentElement;                 // .core (= dial size)
-  if(!parent || !parent.clientWidth) return;       // hidden view -> skip
-  const avail = parent.clientWidth * 0.84;         // keep inside the ring
-  const w = el.scrollWidth;
-  if(w > avail){
-    const cur = parseFloat(getComputedStyle(el).fontSize) || 100;
-    el.style.fontSize = Math.max(40, Math.floor(cur * avail / w)) + "px";
-  }
+  el.style.fontSize = "";                           // back to the CSS base
+  const txt = el.textContent || "";
+  const len = txt.length;
+  if(!len || !el.scrollWidth) return;               // nothing to measure / hidden
+  const charW = el.scrollWidth / len;               // monospace: advance per char at base size
+  if(!isFinite(charW) || charW<=0) return;
+  // size so the readout fills the screen width; reserve a min of 3 chars so the
+  // idle "--" doesn't blow up, and the decimal rule caps real values at 4 chars
+  const chars = Math.max(len, 3);
+  const avail = window.innerWidth * 0.90;           // use the whole screen, not just the dial
+  const base = parseFloat(getComputedStyle(el).fontSize) || 160;
+  let size = base * avail / (charW * chars);
+  size = Math.max(60, Math.min(size, window.innerHeight * 0.5));
+  el.style.fontSize = size + "px";
 }
 function updateBig(vmgText, vmgKind, stateText, distText, relText, relBrg){
   const t = currentTarget();
@@ -1131,7 +1136,7 @@ function addLine(){
 const DIST_UNITS = { m:1, km:1000, nm:1852, mi:1609.344 };
 const DIST_UNIT_ORDER = ["m","km","nm","mi"];
 let addMode = "coords";
-let latHem = "N", lonHem = "E";
+let latHem = "N", lonHem = "W";
 let coordFmt = "dd";  // "dd" | "ddm" | "dms"
 function toggleHem(which){
   if(which==="lat"){ latHem = latHem==="N" ? "S" : "N"; const b=$("latHemBtn"); b.textContent=latHem; b.classList.toggle("neg", latHem==="S"); }
