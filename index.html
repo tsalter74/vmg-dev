@@ -32,9 +32,41 @@
     --bad:#FF6B5B;       /* opening  */
     --mark:#F2B33D;      /* waypoint needle */
     --cog:#5AA9D6;       /* course over ground */
+    --dial-face:#0B1B26; --ring:#1C3A4A; --ring2:#122C3B;
+    --tick-major:#3C6175; --tick-minor:#21465A;
+    --card-n:#9FC0CE; --card:#5C7C8A; --arrow:#5AA9D6; --needle-tail:#3a2f12;
     --mono: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Consolas, "Roboto Mono", monospace;
     --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
+  /* daylight theme (light background, dark text) */
+  body.light{
+    --bg:#EAF0F3; --panel:#FFFFFF; --panel-2:#E4ECEF; --line:#C2D0D7;
+    --text:#0A1C26; --muted:#566c77;
+    --good:#0A8A4A; --bad:#D2382A; --mark:#B5781A; --cog:#2C7FB8;
+    --dial-face:#FFFFFF; --ring:#C2D0D7; --ring2:#DCE4E8;
+    --tick-major:#7C939F; --tick-minor:#B2C2CA;
+    --card-n:#23485A; --card:#5E7682; --arrow:#2C7FB8; --needle-tail:#E6D2A6;
+  }
+  body.light{
+    background:
+      radial-gradient(120% 80% at 50% -10%, #ffffff 0%, var(--bg) 55%) fixed,
+      var(--bg);
+  }
+  /* dial elements driven by theme variables */
+  .dial-face{ fill:var(--dial-face); stroke:var(--ring); }
+  .dial-ring2{ stroke:var(--ring2); }
+  #dialSvg text.card{ fill:var(--card); }
+  #dialSvg #lblN{ fill:var(--card-n); }
+  .hdg-arrow{ fill:var(--arrow); }
+  .needle{ fill:var(--mark); }
+  .needle-tail{ fill:var(--needle-tail); }
+  .hub{ fill:var(--mark); }
+  .hub-dot{ fill:var(--dial-face); }
+  .tk-maj{ stroke:var(--tick-major); }
+  .tk-min{ stroke:var(--tick-minor); }
+  .big-arrow polygon{ fill:var(--mark); }
+  body.light .vmg-num{ text-shadow:none; }
+  body.light .big-vmg{ text-shadow:none; }
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html,body{ margin:0; height:100%; }
   body{
@@ -90,9 +122,8 @@
   }
   .vmg-num{
     font-family:var(--sans); font-weight:700;
-    font-size:clamp(102px, 39vw, 197px); line-height:.92;
+    font-size:clamp(127px, 49vw, 246px); line-height:.92;
     font-variant-numeric:tabular-nums; letter-spacing:-.02em;
-    white-space:nowrap;
     color:var(--good);
     text-shadow:0 0 20px color-mix(in srgb, currentColor 45%, transparent);
     transition:color .25s ease;
@@ -247,12 +278,16 @@
 
   /* segmented control (options) */
   .seg{ display:flex; gap:8px; }
+  .row-label{ font-size:13px; color:var(--muted); margin-bottom:7px; letter-spacing:.03em; }
   .seg button{ flex:1; font-family:var(--sans); font-size:15px; color:var(--muted); background:var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:13px 8px; }
   .seg button.on{ color:var(--good); border-color:var(--good); background:color-mix(in srgb, var(--good) 12%, var(--panel-2)); }
 
   /* big landscape display */
   .big{
-    position:fixed; inset:0;                   /* normal overlay: follows device orientation */
+    position:fixed; top:50%; left:50%;
+    width:100vh; height:100vw;                 /* swapped: fills the screen once rotated */
+    transform:translate(-50%,-50%) rotate(90deg);
+    transform-origin:center center;
     z-index:60; background:var(--bg);
     display:none; flex-direction:column; align-items:center; justify-content:center;
     padding:12px 22px; gap:4px;
@@ -266,15 +301,15 @@
     font-family:var(--sans); font-weight:700; font-variant-numeric:tabular-nums;
     font-size:clamp(120px, 44vw, 320px); line-height:.86; letter-spacing:-.02em; color:var(--good);
     text-shadow:0 0 30px color-mix(in srgb, currentColor 40%, transparent);
-    max-width:100%; overflow:hidden; white-space:nowrap;
+    max-width:100%; overflow:hidden;
   }
   .big-vmg.opening{ color:var(--bad); }
   .big-vmg.idle{ color:var(--muted); text-shadow:none; }
-  .big-vmg-sub{ font-family:var(--mono); font-size:clamp(13px,4vw,18px); letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-top:2px; text-align:center; }
-  .big-row{ display:flex; gap:14px; margin-top:clamp(8px,2.5vw,18px); width:100%; max-width:560px; }
+  .big-vmg-sub{ font-family:var(--mono); font-size:clamp(12px,3.2vw,15px); letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-top:1px; text-align:center; }
+  .big-row{ display:flex; gap:14px; margin-top:clamp(6px,2vw,14px); width:100%; max-width:560px; }
   .big-cell{ flex:1; min-width:0; text-align:center; }
-  .big-k{ font-size:clamp(12px,3.4vw,15px); letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
-  .big-v{ font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap; font-size:clamp(26px,7vw,46px); color:var(--text); line-height:1; margin-top:4px; }
+  .big-k{ font-size:clamp(11px,3vw,13px); letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+  .big-v{ font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap; font-size:clamp(22px,6vw,40px); color:var(--text); line-height:1; margin-top:3px; }
 
   @media (prefers-reduced-motion: reduce){
     *{ transition:none !important; }
@@ -296,24 +331,24 @@
         <div class="dial">
           <svg viewBox="0 0 200 200" id="dialSvg" aria-hidden="true">
             <!-- card -->
-            <circle cx="100" cy="100" r="94" fill="#0B1B26" stroke="#1C3A4A" stroke-width="1.5"/>
-            <circle cx="100" cy="100" r="82" fill="none" stroke="#122C3B" stroke-width="1"/>
+            <circle cx="100" cy="100" r="94" class="dial-face" fill="#0B1B26" stroke="#1C3A4A" stroke-width="1.5"/>
+            <circle cx="100" cy="100" r="82" class="dial-ring2" fill="none" stroke="#122C3B" stroke-width="1"/>
             <!-- rotating compass card (course-up): ticks + cardinal letters -->
             <g id="cardRot" transform="rotate(0 100 100)">
               <g id="ticks"></g>
-              <text x="100" y="17" text-anchor="middle" font-family="ui-monospace,monospace" font-size="13" fill="#9FC0CE" id="lblN">N</text>
-              <text x="188" y="104" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#5C7C8A">E</text>
-              <text x="100" y="192" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#5C7C8A">S</text>
-              <text x="12" y="104" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#5C7C8A">W</text>
+              <text x="100" y="17" text-anchor="middle" font-family="ui-monospace,monospace" font-size="13" fill="#9FC0CE" id="lblN" class="card">N</text>
+              <text x="188" y="104" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#5C7C8A" class="card">E</text>
+              <text x="100" y="192" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#5C7C8A" class="card">S</text>
+              <text x="12" y="104" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" fill="#5C7C8A" class="card">W</text>
             </g>
             <!-- fixed heading index (top, above the outer ring) -->
-            <polygon points="100,-9 93,3 107,3" fill="#5AA9D6"/>
+            <polygon points="100,-9 93,3 107,3" class="hdg-arrow" fill="#5AA9D6"/>
             <!-- waypoint needle (rotates to relative bearing) -->
             <g id="needleRot" transform="rotate(0 100 100)">
-              <polygon points="100,20 92,104 108,104" fill="#F2B33D"/>
-              <polygon points="100,150 93,104 107,104" fill="#3a2f12"/>
-              <circle cx="100" cy="100" r="6" fill="#F2B33D"/>
-              <circle cx="100" cy="100" r="2.5" fill="#0B1B26"/>
+              <polygon points="100,20 92,104 108,104" class="needle" fill="#F2B33D"/>
+              <polygon points="100,150 93,104 107,104" class="needle-tail" fill="#3a2f12"/>
+              <circle cx="100" cy="100" r="6" class="hub" fill="#F2B33D"/>
+              <circle cx="100" cy="100" r="2.5" class="hub-dot" fill="#0B1B26"/>
             </g>
           </svg>
           <div class="core">
@@ -525,10 +560,15 @@
     <div class="hint">Format used when adding a waypoint by coordinates. Decimal 50.7601° · Deg min 50° 45.6′ · Deg min sec 50° 45′ 36″.</div>
 
     <div class="section-title" style="margin-top:18px">Display</div>
-    <button class="btn primary" type="button" id="openBig" style="width:100%">Open big landscape display</button>
-    <div class="hint">A stripped-down, extra-large readout — VMG, distance and steer — for reading from across the cockpit. It's laid out in landscape, so turn the phone on its side. Tap it anywhere to exit.</div>
+    <div class="row-label">Theme</div>
+    <div class="seg" id="segTheme" style="margin-bottom:12px">
+      <button type="button" data-theme="night">Night</button>
+      <button type="button" data-theme="day">Day</button>
+    </div>
+    <button class="btn primary" type="button" id="openBig" style="width:100%">Open clean display</button>
+    <div class="hint">A stripped-down, extra-large readout — VMG, distance and steer — laid out in landscape, so turn the phone on its side. Tap it anywhere to exit.</div>
 
-    <div class="hint" style="margin-top:22px; opacity:.5; text-align:center">Build 22 — big landscape display</div>
+    <div class="hint" style="margin-top:22px; opacity:.5; text-align:center">Build 23 — day theme + clean display</div>
   </section>
 </main>
 
@@ -615,6 +655,7 @@ let bigOn = false;
 let lines = [];           // [{id,name,type:'twopt'|'wind', aId,bId | wpId,wind}]
 let activeLineId = null;
 let mode = "wp";          // "wp" | "line" — which target the Navigate screen follows
+let theme = "night";      // "night" | "day"
 
 let pos = null;        // {lat,lon,t,acc,rawSpeed,rawHeading}
 let prevFix = null;
@@ -640,6 +681,7 @@ function load(){
   try{ lines = JSON.parse(localStorage.getItem("vmg.lines")) || []; }catch(e){ lines=[]; }
   activeLineId = localStorage.getItem("vmg.activeLine") || null;
   mode = localStorage.getItem("vmg.mode")==="line" ? "line" : "wp";
+  theme = localStorage.getItem("vmg.theme")==="day" ? "day" : "night";
 }
 function saveWps(){ localStorage.setItem(LS.wps, JSON.stringify(waypoints)); }
 function saveActive(){ activeId ? localStorage.setItem(LS.active, activeId) : localStorage.removeItem(LS.active); }
@@ -719,7 +761,7 @@ function toast(msg){
     const r1 = 82, r2 = major?70:(mid?74:77);
     const x1=100+r1*Math.sin(a), y1=100-r1*Math.cos(a);
     const x2=100+r2*Math.sin(a), y2=100-r2*Math.cos(a);
-    s += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${major?'#3C6175':'#21465A'}" stroke-width="${major?1.4:1}"/>`;
+    s += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" class="${major?'tk-maj':'tk-min'}" stroke-width="${major?1.4:1}"/>`;
   }
   g.innerHTML = s;
 })();
@@ -858,15 +900,17 @@ function fitBigVmg(){
   const len = txt.length;
   if(!len || !el.scrollWidth) return;
   const charW = el.scrollWidth / len;                // advance per char at base size
-  if(!isFinite(charW) || charW<=0) return;
   const base = parseFloat(getComputedStyle(el).fontSize) || 200;
   const chars = Math.max(len, 3);
-  // the overlay now follows device orientation, so size against the real
-  // viewport: fill the width for the current value, but cap the height so the
-  // arrow, sub-label and stat row below the number stay fully on screen.
-  const capW = base * (window.innerWidth * 0.94) / (charW * chars);
-  const capH = (window.innerHeight * 0.48) / 0.86;   // 0.86 = line-height
-  let size = Math.max(60, Math.min(capW, capH));
+  const shortAxis = Math.min(window.innerWidth, window.innerHeight); // portrait width
+  const longAxis  = Math.max(window.innerWidth, window.innerHeight); // landscape width
+  // main dial number fills 72% of the short axis; clean display matches it
+  const mainSize = base * (shortAxis * 0.72) / (charW * chars);
+  let size = mainSize;
+  // cap so it fits the rotated area: width = long axis, height leaves room for arrow/sub/row
+  const capW = base * (longAxis * 0.94) / (charW * chars);
+  const capH = (shortAxis * 0.66) / 0.86;
+  size = Math.max(60, Math.min(size, capW, capH));
   el.style.fontSize = size + "px";
 }
 function fitDialVmg(){
@@ -876,13 +920,12 @@ function fitDialVmg(){
   const txt = el.textContent || "";
   const len = txt.length;
   if(!len || !el.scrollWidth) return;               // nothing to measure / hidden
-  const charW = el.scrollWidth / len;               // advance per char at base size
+  const charW = el.scrollWidth / len;               // monospace: advance per char at base size
   if(!isFinite(charW) || charW<=0) return;
-  // size so the readout fills the screen width for the CURRENT value: small
-  // numbers (e.g. "9.9") render big and shrink once they reach 4 chars
-  // ("10.0" and up). reserve a min of 3 chars so idle "--" doesn't blow up.
+  // size so the readout fills the screen width; reserve a min of 3 chars so the
+  // idle "--" doesn't blow up, and the decimal rule caps real values at 4 chars
   const chars = Math.max(len, 3);
-  const avail = window.innerWidth * 0.90;           // use the whole screen, not just the dial
+  const avail = window.innerWidth * 0.72;           // use the screen width (20% smaller than before)
   const base = parseFloat(getComputedStyle(el).fontSize) || 160;
   let size = base * avail / (charW * chars);
   size = Math.max(60, Math.min(size, window.innerHeight * 0.5));
@@ -1158,6 +1201,16 @@ function setFmt(f){
   if(!["dd","ddm","dms"].includes(f)) return;
   coordFmt=f; localStorage.setItem("vmg.coordfmt", f);
   setCoordFmtUI(); renderOptions();
+}
+function applyTheme(){
+  document.body.classList.toggle("light", theme==="day");
+  document.querySelectorAll("#segTheme button").forEach(b=> b.classList.toggle("on", b.dataset.theme===theme));
+}
+function setTheme(t){
+  theme = t==="day" ? "day" : "night";
+  localStorage.setItem("vmg.theme", theme);
+  applyTheme();
+  fitDialVmg(); if(bigOn) fitBigVmg();
 }
 // read one axis as an unsigned magnitude in decimal degrees, per chosen format
 function readAxisMag(axis){
@@ -1435,6 +1488,8 @@ function init(){
   $("latHemBtn").addEventListener("click", ()=>toggleHem("lat"));
   $("lonHemBtn").addEventListener("click", ()=>toggleHem("lon"));
   document.querySelectorAll("#segFmt button").forEach(b=> b.addEventListener("click", ()=>setFmt(b.dataset.f)));
+  document.querySelectorAll("#segTheme button").forEach(b=> b.addEventListener("click", ()=>setTheme(b.dataset.theme)));
+  applyTheme();
   setCoordFmtUI();
 
   // lines

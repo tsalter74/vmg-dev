@@ -95,7 +95,7 @@ NAVIGATE
 --------
 The big number is live VMG — green while closing, coral while losing ground,
 grey when idle. It reads one decimal below 100 (e.g. 6.4) and whole numbers
-above. "Big landscape display" (in Options) is a stripped-back, extra-large read-out, laid out in landscape (turn the phone sideways), for
+above. "Clean display" (in Options) is a stripped-back, extra-large read-out, laid out in landscape (turn the phone sideways), for
 glancing across the cockpit; "Keep screen on" holds the screen awake.
 
 
@@ -106,7 +106,8 @@ OPTIONS  (gear tab)
     °E/°W (East positive). All bearings shown then follow your choice; °T/°M is
     indicated. Wind directions for lines are entered as °true.
   • Coordinate entry format: decimal / deg-min / deg-min-sec.
-  • Keep screen on, Use compass, and Open big display.
+  • Day/Night theme (Day = light background, dark text — easier in bright
+    sunshine), Keep screen on, Use compass, and Open clean display.
   • A faint build marker (e.g. "Build 20 — …") so you can confirm which version
     a deployment is actually running.
 
